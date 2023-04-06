@@ -13,7 +13,7 @@ export function setRevalidateHeaders(
   options: PayloadOptions
 ) {
   if (options.private || options.stateful) {
-    if (options.private || !res.hasHeader('Cache-Control')) {
+    if (options.private || !res.getHeader("Cache-Control")) {
       res.setHeader(
         'Cache-Control',
         `private, no-cache, no-store, max-age=0, must-revalidate`
@@ -26,12 +26,13 @@ export function setRevalidateHeaders(
       )
     }
 
-    res.setHeader(
-      'Cache-Control',
-      `s-maxage=${options.revalidate}, stale-while-revalidate`
-    )
+    if (!res.getHeader("Cache-Control")) {
+      res.setHeader("Cache-Control", `s-maxage=${options.revalidate}, stale-while-revalidate`);
+    }
   } else if (options.revalidate === false) {
-    res.setHeader('Cache-Control', `s-maxage=31536000, stale-while-revalidate`)
+    if (!res.getHeader("Cache-Control")) {
+      res.setHeader("Cache-Control", `s-maxage=31536000, stale-while-revalidate`);
+    }
   }
 }
 
